@@ -1,0 +1,88 @@
+{
+  "experiment_name": "mcmc_sensitivity_gp_prior",
+  "description": "MCMC sensitivity analysis: RWM vs MALA for SMC sampling on GP prior samples",
+  "problem": {
+    "name": "GPSample",
+    "kwargs": {
+      "dim": 3,
+      "kernel": "matern52",
+      "lengthscale": 0.3,
+      "outputscale": 1.0,
+      "n_features": 2048,
+      "seed": 0
+    }
+  },
+  "model": {
+    "kernel": "matern52",
+    "hyperparameter_mode": "fixed",
+    "use_input_transform": false,
+    "use_outcome_transform": false,
+    "use_default_kernel_priors": false,
+    "hyperparameters": {
+      "lengthscale": 0.3,
+      "outputscale": 1.0,
+      "noise": 0.0001,
+      "freeze_lengthscale": true,
+      "freeze_outputscale": true,
+      "freeze_noise": true
+    }
+  },
+  "density_fn_type": "lambda f: torch.exp(-f)",
+  "initial_design": {
+    "n_init": 1,
+    "strategy": "random"
+  },
+  "optimization": {
+    "n_iterations": 100,
+    "max_grid_points": 10000
+  },
+  "repetitions": {
+    "n_trials": 10
+  },
+  "acquisition_functions": [
+    {
+      "name": "AB-SID-iVAR",
+      "hyperparameters": {
+        "constraint_type": null,
+        "base_approximation": "zeroth_order_analytic",
+        "n_smc_particles": 2500,
+        "n_mutation_steps": 10,
+        "mutation_kernel": "rwm",
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "RS",
+      "hyperparameters": {}
+    },
+    {
+      "name": "TS-SID-iVAR",
+      "hyperparameters": {
+        "constraint_type": null,
+        "base_approximation": null,
+        "use_thompson_sampling": true,
+        "n_smc_particles": 2500,
+        "n_mutation_steps": 10,
+        "mutation_kernel": "rwm",
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    }
+  ],
+  "output": {
+    "output_dir": "./exps/results/mcmc_sensitivity",
+    "save_format": "pt",
+    "save_reference_points": false
+  },
+  "metrics": {
+    "performance_metrics": [
+      "mse",
+      "weighted_mse"
+    ],
+    "n_eval_points": 100000,
+    "eval_seed": 0
+  }
+}

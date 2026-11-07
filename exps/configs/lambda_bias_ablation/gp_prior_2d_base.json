@@ -1,0 +1,195 @@
+{
+  "experiment_name": "lambda_bias_ablation_2d",
+  "description": "Lambda-bias ablation: 2D GP prior with variable temperature (lambda) and optional bias term",
+  "problem": {
+    "name": "GPSampleWithBias",
+    "kwargs": {
+      "dim": 2,
+      "kernel": "matern52",
+      "lengthscale": [
+        0.3,
+        0.3
+      ],
+      "outputscale": 1.0,
+      "n_features": 2048,
+      "seed": 369,
+      "use_bias": false,
+      "bias_lengthscale": [
+        0.3,
+        0.3
+      ],
+      "bias_outputscale": 1.0,
+      "bias_seed": 184
+    }
+  },
+  "model": {
+    "kernel": "matern52",
+    "hyperparameter_mode": "fixed",
+    "use_input_transform": false,
+    "use_outcome_transform": false,
+    "use_default_kernel_priors": false,
+    "hyperparameters": {
+      "lengthscale": [
+        0.3,
+        0.3
+      ],
+      "outputscale": 1.0,
+      "noise": 0.0001,
+      "freeze_lengthscale": true,
+      "freeze_outputscale": true,
+      "freeze_noise": true
+    }
+  },
+  "density_fn_type": "lambda f: torch.exp(-f)",
+  "temperature": 1.0,
+  "initial_design": {
+    "n_init": 1,
+    "strategy": "random"
+  },
+  "optimization": {
+    "n_iterations": 100,
+    "max_grid_points": 10000,
+    "num_restarts": 20,
+    "raw_samples": 1024
+  },
+  "repetitions": {
+    "n_trials": 30
+  },
+  "acquisition_functions": [
+    {
+      "name": "RS",
+      "hyperparameters": {}
+    },
+    {
+      "name": "US",
+      "hyperparameters": {}
+    },
+    {
+      "name": "IMSE",
+      "hyperparameters": {
+        "n_ref_points_continuous": 2000,
+        "ref_seed_continuous": 0
+      }
+    },
+    {
+      "name": "HAL",
+      "hyperparameters": {
+        "tau": [
+          0.0,
+          3.0
+        ],
+        "threshold": [
+          1.0,
+          5.0
+        ],
+        "temperature": 1.0,
+        "max_mcmc_steps": 2000,
+        "step_size": 0.05,
+        "init_strategy": "from_data"
+      }
+    },
+    {
+      "name": "AB-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "base_approximation": "zeroth_order_analytic",
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "AB-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "zeroth_order_analytic",
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "TS-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "base_approximation": "thompson_sampling",
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "TS-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "thompson_sampling",
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "mu-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "mu-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "mu-SID-EPIG",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    }
+  ],
+  "output": {
+    "output_dir": "./exps/results/lambda_bias_ablation",
+    "save_format": "pt",
+    "save_reference_points": false
+  },
+  "metrics": {
+    "performance_metrics": [
+      "mse",
+      "nlml",
+      "weighted_mse",
+      "weighted_nlml"
+    ],
+    "n_eval_points": 200000,
+    "eval_seed": 0
+  }
+}

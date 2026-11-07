@@ -1,0 +1,93 @@
+{
+  "experiment_name": "molecular_med2_tanimoto",
+  "description": "Pool-based active learning on GuacaMol MED2 (Median molecules 2) with Tanimoto kernel",
+  "problem": {
+    "type": "pool",
+    "dataset_path": "exps/data/guacamol_train_data_first_20k_dedup.csv",
+    "objective": "med2",
+    "fingerprint_type": "morgan",
+    "fingerprint_bits": 2048,
+    "fingerprint_radius": 2
+  },
+  "data_split": {
+    "test_size": 0,
+    "test_split_seed": 42
+  },
+  "model": {
+    "kernel": "tanimoto",
+    "hyperparameter_mode": "learned",
+    "use_input_transform": false,
+    "use_outcome_transform": true,
+    "use_default_kernel_priors": false,
+    "hyperparameters": {
+      "noise": 0.0001,
+      "freeze_lengthscale": false,
+      "freeze_outputscale": false,
+      "freeze_noise": true
+    }
+  },
+  "density_fn_type": "lambda f: torch.exp(70*f)",
+  "initial_design": {
+    "n_init": 1,
+    "strategy": "random"
+  },
+  "optimization": {
+    "n_iterations": 300
+  },
+  "repetitions": {
+    "n_trials": 30
+  },
+  "acquisition_functions": [
+    {
+      "name": "RS",
+      "hyperparameters": {}
+    },
+    {
+      "name": "US",
+      "hyperparameters": {}
+    },
+    {
+      "name": "IMSE",
+      "hyperparameters": {}
+    },
+    {
+      "name": "EPIG",
+      "hyperparameters": {}
+    },
+    {
+      "name": "AB-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_lambda": 70,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "zeroth_order_analytic"
+      }
+    },
+    {
+      "name": "TS-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_lambda": 70,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "thompson_sampling",
+        "sample_approach": "dmvn"
+      }
+    },
+    {
+      "name": "mu-SID-EPIG",
+      "hyperparameters": {
+        "boltzmann_lambda": 70,
+        "constraint_type": null
+      }
+    }
+  ],
+  "output": {
+    "output_dir": "./exps/results/molecular/med2/tanimoto",
+    "save_format": "pt",
+    "save_reference_points": false
+  },
+  "metrics": {
+    "performance_metrics": [
+      "mse",
+      "weighted_mse"
+    ]
+  }
+}

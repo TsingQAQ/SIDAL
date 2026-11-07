@@ -1,0 +1,84 @@
+{
+  "experiment_name": "h2o_on_pt111_slab_6d_matern52_formal",
+  "description": "Formal benchmark: H2O on Pt(111) 3-layer slab via MACE-MPA-0 (6D, Matern-5/2)",
+  "problem": {
+    "name": "H2OonPt111_Slab",
+    "dim": 6,
+    "kwargs": {
+      "inverse_temperature": 38.68,
+      "Emax": 1.0,
+      "mace_model": "medium-mpa-0"
+    }
+  },
+  "model": {
+    "kernel": "matern52",
+    "hyperparameter_mode": "learned",
+    "use_input_transform": true,
+    "use_outcome_transform": true,
+    "use_default_kernel_priors": true,
+    "hyperparameters": {
+      "noise": 0.0001,
+      "freeze_lengthscale": false,
+      "freeze_outputscale": false,
+      "freeze_noise": true
+    }
+  },
+  "density_fn_type": "lambda f: torch.exp(-f)",
+  "initial_design": {
+    "n_init": 1,
+    "strategy": "random"
+  },
+  "optimization": {
+    "n_iterations": 300,
+    "max_grid_points": 10000,
+    "num_restarts": 20,
+    "raw_samples": 1024
+  },
+  "repetitions": {
+    "n_trials": 10
+  },
+  "acquisition_functions": [
+    { "name": "RS", "hyperparameters": {} },
+    { "name": "US", "hyperparameters": {} },
+    { "name": "IMSE",
+      "hyperparameters": { "n_ref_points_continuous": 3000, "ref_seed_continuous": 0 } },
+    { "name": "EPIG",
+      "hyperparameters": { "n_ref_points_continuous": 3000, "ref_seed_continuous": 0 } },
+    { "name": "HAL",
+      "hyperparameters": {
+        "tau": [0.0, 3.0], "threshold": [1.0, 5.0],
+        "temperature": 1.0, "max_mcmc_steps": 2000,
+        "step_size": 0.05, "init_strategy": "from_data" } },
+    { "name": "AB-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "zeroth_order_analytic",
+        "n_smc_particles": 6000, "n_mutation_steps": 10,
+        "smc_seed": 0, "n_temperatures": 10, "adaptive_temperatures": false } },
+    { "name": "TS-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "thompson_sampling",
+        "n_smc_particles": 6000, "n_mutation_steps": 10,
+        "smc_seed": 0, "n_temperatures": 10, "adaptive_temperatures": false } },
+    { "name": "mu-SID-EPIG",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "n_smc_particles": 6000, "n_mutation_steps": 10,
+        "smc_seed": 0, "n_temperatures": 10, "adaptive_temperatures": false } }
+  ],
+  "output": {
+    "output_dir": "./exps/results/formal_benchmark/H2OonPt111_Slab_6d/matern52",
+    "save_format": "pt",
+    "save_reference_points": false
+  },
+  "metrics": {
+    "performance_metrics": ["mse", "nlml", "weighted_mse", "weighted_nlml"],
+    "eval_grid_path": "exps/oracles/h2o_on_pt111_slab_eval_grid_100k.pt",
+    "n_eval_points": 100000,
+    "eval_seed": 0
+  }
+}

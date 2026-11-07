@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sidal"
+version = "0.1.0"
+description = "Active learning for Gaussian process regression under self-induced Boltzmann weights (NeurIPS 2026)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0",
+    # Pinned to the stack the paper results were produced with; newer BoTorch
+    # releases evaluate the full posterior covariance on the evaluation grid.
+    "botorch==0.16.0",
+    "gpytorch==1.14.2",
+    "linear_operator==0.6",
+    "numpy",
+    "scipy",
+]
+
+[project.optional-dependencies]
+# Potential energy surface benchmarks (H2/Cu, H/Cu13, Si crystal, H2O/Pt(111))
+pes = ["ase", "mace-torch", "quippy-ase"]
+# Molecular drug discovery benchmark (GuacaMol, Tanimoto kernel)
+molecular = ["rdkit", "gauche", "pandas"]
+# Figure scripts
+plot = ["matplotlib", "seaborn", "pandas"]
+dev = ["pytest"]
+all = ["sidal[pes,molecular,plot,dev]"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sidal = ["test_functions/h2Cu/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

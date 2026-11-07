@@ -1,0 +1,141 @@
+{
+  "experiment_name": "h2cu_mace_2d_matern52-4",
+  "description": "H2/Cu(100) MACE PES (2D). Inputs: Z = COM height above surface [0,5] \u00c5, d = H-H bond length [0.5,5.5] \u00c5. Bridge site, H2 along [010] (phi=90, theta=0) \u2014 the dissociative adsorption geometry. Density targets low-energy region (exp(-2f)).",
+  "problem": {
+    "name": "H2CuMACEPES",
+    "dim": 2,
+    "kwargs": {
+      "structure_file": "test_functions/h2Cu/cu100_0K.in",
+      "model_path": "test_functions/h2Cu/MACE_model_swa.model",
+      "x_offset": 0.0,
+      "y_offset": 0.0,
+      "phi_deg": 90.0,
+      "theta_deg": 0.0,
+      "z_min": 0.0,
+      "z_max": 5.0,
+      "d_min": 0.5,
+      "d_max": 5.5
+    }
+  },
+  "output": {
+    "output_dir": "./exps/results/formal_benchmark/H2Cu_2d/matern52",
+    "save_format": "pt",
+    "save_reference_points": false
+  },
+  "model": {
+    "kernel": "matern52",
+    "hyperparameter_mode": "learned",
+    "use_input_transform": true,
+    "use_outcome_transform": true,
+    "use_default_kernel_priors": true,
+    "hyperparameters": {
+      "noise": 0.0001,
+      "freeze_lengthscale": false,
+      "freeze_outputscale": false,
+      "freeze_noise": true
+    }
+  },
+  "density_fn_type": "lambda f: torch.exp(-f)",
+  "initial_design": {
+    "n_init": 5,
+    "strategy": "sobol"
+  },
+  "optimization": {
+    "n_iterations": 100,
+    "max_grid_points": 10000,
+    "num_restarts": 20,
+    "raw_samples": 1024
+  },
+  "repetitions": {
+    "n_trials": 1
+  },
+  "acquisition_functions": [
+    {
+      "name": "RS",
+      "hyperparameters": {}
+    },
+    {
+      "name": "US",
+      "hyperparameters": {}
+    },
+    {
+      "name": "IMSE",
+      "hyperparameters": {
+        "n_ref_points_continuous": 2000,
+        "ref_seed_continuous": 0
+      }
+    },
+    {
+      "name": "EPIG",
+      "hyperparameters": {
+        "n_ref_points_continuous": 2000,
+        "ref_seed_continuous": 0
+      }
+    },
+    {
+      "name": "HAL",
+      "hyperparameters": {
+        "tau": [
+          0.0,
+          3.0
+        ],
+        "threshold": [
+          1.0,
+          5.0
+        ],
+        "boltzmann_lambda": -1.0,
+        "max_mcmc_steps": 2000,
+        "step_size": 0.05,
+        "init_strategy": "from_data"
+      }
+    },
+    {
+      "name": "AB-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_lambda": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "zeroth_order_analytic",
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "TS-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_lambda": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "thompson_sampling",
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "mu-SID-EPIG",
+      "hyperparameters": {
+        "boltzmann_lambda": -1.0,
+        "constraint_type": null,
+        "n_smc_particles": 2000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    }
+  ],
+  "metrics": {
+    "performance_metrics": [
+      "mse",
+      "nlml",
+      "weighted_mse",
+      "weighted_nlml"
+    ],
+    "n_eval_points": 10000,
+    "eval_seed": 0
+  }
+}

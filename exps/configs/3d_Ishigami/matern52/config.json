@@ -1,0 +1,180 @@
+{
+  "experiment_name": "ishigami_3d_matern52_formal",
+  "description": "Formal benchmark: Ishigami 3D with Matern-5/2, learned lengthscale, fixed noise 1e-4",
+  "problem": {
+    "name": "Ishigami",
+    "dim": 3,
+    "kwargs": {}
+  },
+  "model": {
+    "kernel": "matern52",
+    "hyperparameter_mode": "learned",
+    "use_input_transform": true,
+    "use_outcome_transform": true,
+    "use_default_kernel_priors": true,
+    "hyperparameters": {
+      "noise": 0.0001,
+      "freeze_lengthscale": false,
+      "freeze_outputscale": false,
+      "freeze_noise": true
+    }
+  },
+  "density_fn_type": "lambda f: torch.exp(-f)",
+  "initial_design": {
+    "n_init": 1,
+    "strategy": "random"
+  },
+  "optimization": {
+    "n_iterations": 150,
+    "max_grid_points": 10000,
+    "num_restarts": 20,
+    "raw_samples": 1024
+  },
+  "repetitions": {
+    "n_trials": 30
+  },
+  "acquisition_functions": [
+    {
+      "name": "RS",
+      "hyperparameters": {}
+    },
+    {
+      "name": "US",
+      "hyperparameters": {}
+    },
+    {
+      "name": "IMSE",
+      "hyperparameters": {
+        "n_ref_points_continuous": 3000,
+        "ref_seed_continuous": 0
+      }
+    },
+    {
+      "name": "EPIG",
+      "hyperparameters": {
+        "n_ref_points_continuous": 3000,
+        "ref_seed_continuous": 0
+      }
+    },
+    {
+      "name": "HAL",
+      "hyperparameters": {
+        "tau": [
+          0.0,
+          3.0
+        ],
+        "threshold": [
+          1.0,
+          5.0
+        ],
+        "temperature": 1.0,
+        "max_mcmc_steps": 2000,
+        "step_size": 0.05,
+        "init_strategy": "from_data"
+      }
+    },
+    {
+      "name": "AB-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "base_approximation": "zeroth_order_analytic",
+        "n_smc_particles": 3000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "AB-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "zeroth_order_analytic",
+        "n_smc_particles": 3000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "TS-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "base_approximation": "thompson_sampling",
+        "n_smc_particles": 3000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "TS-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "base_approximation": "thompson_sampling",
+        "n_smc_particles": 3000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "mu-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "n_smc_particles": 3000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "mu-SID-iVAR",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": "energy_weighted_variance",
+        "n_smc_particles": 3000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    },
+    {
+      "name": "mu-SID-EPIG",
+      "hyperparameters": {
+        "boltzmann_sign": -1.0,
+        "constraint_type": null,
+        "n_smc_particles": 3000,
+        "n_mutation_steps": 10,
+        "smc_seed": 0,
+        "n_temperatures": 10,
+        "adaptive_temperatures": false
+      }
+    }
+  ],
+  "output": {
+    "output_dir": "./exps/results/formal_benchmark/Ishigami_3d/matern52",
+    "save_format": "pt",
+    "save_reference_points": false
+  },
+  "metrics": {
+    "performance_metrics": [
+      "mse",
+      "nlml",
+      "weighted_mse",
+      "weighted_nlml"
+    ],
+    "n_eval_points": 300000,
+    "eval_seed": 0
+  }
+}
